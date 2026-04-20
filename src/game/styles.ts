@@ -3,7 +3,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 export const PRIMARY_COLOR = 'rgb(10, 104, 255)';
 
 export const GlobalStyle = createGlobalStyle`
-  html, body, #root {
+  html, body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -12,6 +12,16 @@ export const GlobalStyle = createGlobalStyle`
     overscroll-behavior: none; /* Prevent pull to refresh on mobile browsers */
     overscroll-behavior-y: none;
     touch-action: none; /* Prevent pull-to-refresh and swipe navigation */
+    position: fixed; /* Force no scrollable root view for Android WebViews */
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
   }
 
   body {

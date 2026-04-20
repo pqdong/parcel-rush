@@ -61,22 +61,21 @@ class SoundManager {
     this.isUnlocked = true;
 
     const unlockHTMLAudio = (audio: HTMLAudioElement) => {
-      const originalVolume = audio.volume;
-      audio.volume = 0; // Mute during unlock
+      audio.muted = true; // Bắt buộc dùng muted trên iOS vì Safari iOS bỏ qua thuộc tính volume
       
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           // Nếu đây là nhạc nền và đang được yêu cầu phát, không pause
           if (audio === this.bgmAudio && this.isBgmPlaying) {
-            audio.volume = originalVolume;
+            audio.muted = false;
             return;
           }
           audio.pause();
           audio.currentTime = 0;
-          audio.volume = originalVolume;
+          audio.muted = false;
         }).catch(() => {
-          audio.volume = originalVolume;
+          audio.muted = false;
         });
       }
     };
