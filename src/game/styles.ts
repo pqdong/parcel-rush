@@ -3,15 +3,21 @@ import styled, { createGlobalStyle } from 'styled-components';
 export const PRIMARY_COLOR = 'rgb(10, 104, 255)';
 
 export const GlobalStyle = createGlobalStyle`
-  body {
+  html, body, #root {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent scrolling on mobile */
+    overscroll-behavior: none; /* Prevent pull to refresh on mobile browsers */
+    overscroll-behavior-y: none;
+    touch-action: none; /* Prevent pull-to-refresh and swipe navigation */
+  }
+
+  body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: #f5f5f5;
     color: #333;
-    overflow: hidden; /* Prevent scrolling on mobile */
-    touch-action: none; /* Prevent pull-to-refresh and swipe navigation */
-    overscroll-behavior-y: none; /* Prevent pull to refresh on mobile browsers */
   }
   * {
     box-sizing: border-box;

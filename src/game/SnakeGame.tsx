@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Gamepad2, Trophy } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { GlobalStyle, AppContainer, ContentArea, NavBar, NavItem } from './styles';
+import { soundManager } from './SoundManager';
 
 // Import các màn hình (Screens) đã được tách ra
 import { IntroScreen } from './components/IntroScreen';
@@ -14,6 +15,13 @@ import { HistoryScreen } from './components/HistoryScreen';
  */
 export const SnakeGameApp: React.FC = () => {
   const { currentScreen, setCurrentScreen } = useAppStore();
+
+  useEffect(() => {
+    // Nếu chuyển sang màn hình không phải là GAME, tự động dừng mọi âm thanh
+    if (currentScreen !== 'GAME') {
+      soundManager.stopAll();
+    }
+  }, [currentScreen]);
 
   return (
     <>

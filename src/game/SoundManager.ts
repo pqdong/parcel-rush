@@ -1,18 +1,17 @@
 /**
  * Lớp quản lý âm thanh cho trò chơi
- * Sử dụng Web Audio API cho SFX (để không bị delay) và HTMLAudioElement cho BGM
+ * Chuyển sang dùng hoàn toàn HTMLAudioElement (Audio) theo yêu cầu.
+ * Sử dụng kĩ thuật pooling (nhiều thẻ Audio) để không bị cắt tiếng khi âm thanh phát chồng chéo.
  */
 class SoundManager {
   private bgmAudio: HTMLAudioElement;
-  private sfxElements: Record<string, HTMLAudioElement> = {};
+
+  // Pools for SFX to allow overlapping sounds
+  private sfxPools: Record<string, HTMLAudioElement[]> = {};
+  private sfxPoolIndexes: Record<string, number> = {};
+
   private isBgmPlaying = false;
   private isUnlocked = false;
-
-  private audioCtx: AudioContext | null = null;
-  private sfxBuffers: Record<string, AudioBuffer> = {};
-  private useWebAudio = false;
-  private sfxMasterGain: GainNode | null = null;
-  private activeSources: Set<AudioBufferSourceNode> = new Set();
 
   constructor() {
     this.bgmAudio = new Audio('https://salt.tikicdn.com/ts/ecomGameHub/74/64/76/54acc707e4a854ade25afd51299629b3.mp3');
@@ -20,51 +19,24 @@ class SoundManager {
     this.bgmAudio.volume = 0.4;
     this.bgmAudio.preload = 'auto';
 
-    // Fallback HTMLAudioElements
-    this.sfxElements['EAT'] = new Audio('https://salt.tikicdn.com/ts/ecomGameHub/78/9c/78/25fd6fdf87e12314dbc11c6e37eefa48.mp3');
-    this.sfxElements['HIT'] = new Audio('https://salt.tikicdn.com/ts/ecomGameHub/b9/d7/13/48bd2ed1f57f33238bda03f64c9631c9.mp3');
-    this.sfxElements['GAMEOVER'] = new Audio('https://salt.tikicdn.com/ts/ecomGameHub/54/1f/bb/d920c53bf4f9071bb721acf394e2f40d.mp3');
+    // Tạo Pool (nhiều thẻ HTMLAudioElement) cho từng loại SFX để phát chồng chéo mà không cần cloneNode
+    this.initPool('EAT', 'https://salt.tikicdn.com/ts/ecomGameHub/78/9c/78/25fd6fdf87e12314dbc11c6e37eefa48.mp3', 4);
+    this.initPool('HIT', 'https://salt.tikicdn.com/ts/ecomGameHub/b9/d7/13/48bd2ed1f57f33238bda03f64c9631c9.mp3', 2);
+    this.initPool('GAMEOVER', 'https://salt.tikicdn.com/ts/ecomGameHub/54/1f/bb/d920c53bf4f9071bb721acf394e2f40d.mp3', 1);
+  }
 
-    Object.values(this.sfxElements).forEach(audio => {
+  /**
+   * Khởi tạo các mảng Audio dự phòng
+   */
+  private initPool(key: string, url: string, size: number) {
+    const pool: HTMLAudioElement[] = [];
+    for (let i = 0; i < size; i++) {
+      const audio = new Audio(url);
       audio.preload = 'auto';
-    });
-
-    this.initWebAudio();
-  }
-
-  private async initWebAudio() {
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContextClass) return;
-      
-      this.audioCtx = new AudioContextClass();
-      
-      this.sfxMasterGain = this.audioCtx.createGain();
-      this.sfxMasterGain.gain.value = 0.6;
-      this.sfxMasterGain.connect(this.audioCtx.destination);
-      
-      await Promise.all([
-        this.loadSFX('EAT', 'https://salt.tikicdn.com/ts/ecomGameHub/78/9c/78/25fd6fdf87e12314dbc11c6e37eefa48.mp3'),
-        this.loadSFX('HIT', 'https://salt.tikicdn.com/ts/ecomGameHub/b9/d7/13/48bd2ed1f57f33238bda03f64c9631c9.mp3'),
-        this.loadSFX('GAMEOVER', 'https://salt.tikicdn.com/ts/ecomGameHub/54/1f/bb/d920c53bf4f9071bb721acf394e2f40d.mp3')
-      ]);
-      
-      this.useWebAudio = true;
-    } catch (e) {
-      console.warn('Web Audio API init failed, falling back to HTMLAudioElement:', e);
+      pool.push(audio);
     }
-  }
-
-  private async loadSFX(key: string, url: string) {
-    if (!this.audioCtx) return;
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
-      this.sfxBuffers[key] = audioBuffer;
-    } catch (e) {
-      console.warn(`Failed to load SFX ${key}:`, e);
-    }
+    this.sfxPools[key] = pool;
+    this.sfxPoolIndexes[key] = 0;
   }
 
   /**
@@ -80,32 +52,6 @@ class SoundManager {
   unlockAudio() {
     if (this.isUnlocked) return;
     this.isUnlocked = true;
-
-    // Unlock Web Audio API
-    if (this.audioCtx) {
-      if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
-      }
-      // Play silent sound to unlock
-      const buffer = this.audioCtx.createBuffer(1, 1, 22050);
-      const source = this.audioCtx.createBufferSource();
-      source.buffer = buffer;
-      source.connect(this.audioCtx.destination);
-      source.start(0);
-      
-      source.onended = () => source.disconnect();
-    }
-
-    // Đăng ký sự kiện để liên tục giữ AudioContext không bị suspend trên iOS
-    const resumeContext = () => {
-      if (this.audioCtx && this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume().catch(() => {});
-      }
-    };
-    window.addEventListener('touchstart', resumeContext, { passive: true });
-    window.addEventListener('touchend', resumeContext, { passive: true });
-    window.addEventListener('click', resumeContext, { passive: true });
-    window.addEventListener('keydown', resumeContext, { passive: true });
 
     const unlockHTMLAudio = (audio: HTMLAudioElement) => {
       const originalVolume = audio.volume;
@@ -128,10 +74,13 @@ class SoundManager {
       }
     };
     
+    // Mở khóa BGM
     unlockHTMLAudio(this.bgmAudio);
-    if (!this.useWebAudio) {
-      Object.values(this.sfxElements).forEach(unlockHTMLAudio);
-    }
+    
+    // Mở khóa tất cả SFX trong Pools
+    Object.values(this.sfxPools).forEach(pool => {
+      pool.forEach(audio => unlockHTMLAudio(audio));
+    });
   }
 
   /**
@@ -159,50 +108,41 @@ class SoundManager {
   }
 
   /**
+   * Dừng tất cả mọi âm thanh (BGM và SFX), dùng khi chuyển qua màn hình khác
+   */
+  stopAll() {
+    this.stopBGM();
+    Object.values(this.sfxPools).forEach(pool => {
+      pool.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    });
+  }
+
+  /**
    * Phát hiệu ứng âm thanh (SFX)
+
    * @param type Loại hiệu ứng ('EAT' | 'HIT' | 'GAMEOVER')
    * @param enabled Trạng thái bật/tắt hiệu ứng
    */
   playSFX(type: 'EAT' | 'HIT' | 'GAMEOVER', enabled: boolean) {
     if (!enabled) return;
 
-    if (this.useWebAudio && this.audioCtx && this.sfxBuffers[type]) {
-      // Đảm bảo context luôn chạy trước khi phát
-      if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume().catch(() => {});
-      }
-      
-      try {
-        const source = this.audioCtx.createBufferSource();
-        source.buffer = this.sfxBuffers[type];
-        
-        if (this.sfxMasterGain) {
-          source.connect(this.sfxMasterGain);
-        } else {
-          source.connect(this.audioCtx.destination);
-        }
-        
-        // Ngăn Safari dọn dẹp rác (Garbage Collection) nhầm khi âm thanh đang phát gây mất tiếng
-        this.activeSources.add(source);
-        
-        source.onended = () => {
-          source.disconnect();
-          this.activeSources.delete(source);
-        };
-        
-        source.start(0);
-      } catch (e) {
-        console.warn('Web Audio SFX play failed:', e);
-      }
-    } else {
-      // Fallback cho trình duyệt không hỗ trợ Web Audio API hoặc bị lỗi CORS
-      const audio = this.sfxElements[type];
-      if (audio) {
-        audio.currentTime = 0;
-        audio.volume = 0.6;
-        audio.play().catch(err => console.warn('SFX fallback original play failed:', err));
-      }
-    }
+    const pool = this.sfxPools[type];
+    if (!pool || pool.length === 0) return;
+
+    // Lấy thẻ Audio tiếp theo trong chuỗi xoay vòng (Round-Robin)
+    const index = this.sfxPoolIndexes[type];
+    const audio = pool[index];
+    
+    // Đặt lại thời gian và âm lượng rồi phát
+    audio.currentTime = 0;
+    audio.volume = 0.6;
+    audio.play().catch(err => console.warn(`SFX ${type} play failed:`, err));
+
+    // Tính toán index cho lần sử dụng tiếp theo
+    this.sfxPoolIndexes[type] = (index + 1) % pool.length;
   }
 }
 

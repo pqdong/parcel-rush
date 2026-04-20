@@ -40,6 +40,21 @@ export const GameScreen: React.FC = () => {
 
   React.useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+    // Chặn triệt để hành động "Pull to refresh" / cuộn trang trên Safari và Android khi đang ở màn hình Game
+    const handleTouchMove = (e: TouchEvent) => {
+      // Chỉ chặn nếu đang thao tác một ngón tay (vuốt để chơi)
+      if (e.touches.length === 1) {
+        e.preventDefault();
+      }
+    };
+    
+    // Sử dụng { passive: false } là BẮT BUỘC để e.preventDefault() hoạt động
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
 
   const handleReviveSuccess = () => {
