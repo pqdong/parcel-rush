@@ -12,15 +12,11 @@ export const GlobalStyle = createGlobalStyle`
     overscroll-behavior: none; /* Prevent pull to refresh on mobile browsers */
     overscroll-behavior-y: none;
     touch-action: none; /* Prevent pull-to-refresh and swipe navigation */
-    position: fixed; /* Force no scrollable root view for Android WebViews */
   }
 
   #root {
     height: 100%;
     width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
     overflow: hidden;
   }
 

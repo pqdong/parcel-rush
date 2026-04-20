@@ -43,26 +43,23 @@ export const GameScreen: React.FC = () => {
 
     // Chặn triệt để hành động "Pull to refresh" / cuộn trang trên Safari và Android khi đang ở màn hình Game
     const preventOverscroll = (e: TouchEvent) => {
-      // Chỉ chặn thao tác Touch (vuốt để chơi), cho phép click nếu cần
+      // Chỉ chặn thao tác nháp vuốt di chuyển (không chặn touchstart để tránh liệt màn hình)
       if (e.touches.length === 1) {
-        // Kiểm tra xem đối tượng được chạm có phải là button hoặc link không
         const target = e.target as HTMLElement;
-        const isClickable = target.closest('button') || target.tagName === 'BUTTON' || target.tagName === 'A' || target.tagName === 'INPUT';
+        // Cho phép các thành phần tương tác (nút bấm, thanh cuộn) hoạt động bình thường
+        const isInteractive = target.closest('button') || target.tagName === 'BUTTON' || target.tagName === 'A' || target.tagName === 'INPUT' || target.closest('.scrollable');
         
-        if (!isClickable) {
+        if (!isInteractive) {
           e.preventDefault();
         }
       }
     };
     
-    // Sử dụng { passive: false, capture: true } là BẮT BUỘC để chặn trước khi sự kiện tới WebView
-    document.addEventListener('touchmove', preventOverscroll, { passive: false, capture: true });
-    // Bắt thêm touchstart để dập luôn ý định khởi tạo SwipeRefreshLayout của Native App Android
-    document.addEventListener('touchstart', preventOverscroll, { passive: false, capture: true });
+    // Chỉ add sự kiện touchmove để chặn hành động vuốt quá tay (overscroll).
+    document.addEventListener('touchmove', preventOverscroll, { passive: false });
     
     return () => {
-      document.removeEventListener('touchmove', preventOverscroll, { capture: true } as EventListenerOptions);
-      document.removeEventListener('touchstart', preventOverscroll, { capture: true } as EventListenerOptions);
+      document.removeEventListener('touchmove', preventOverscroll);
     };
   }, []);
 
