@@ -33,6 +33,13 @@ class SoundManager {
     for (let i = 0; i < size; i++) {
       const audio = new Audio(url);
       audio.preload = 'auto';
+      
+      // Thủ thuật giảm giật/delay (buffering stall) cho iOS: 
+      // Ép audio tua sẵn về 0 ngay lập tức sau khi phát xong để lần play tiếp theo là zero-latency
+      audio.onended = () => {
+        audio.currentTime = 0;
+      };
+      
       pool.push(audio);
     }
     this.sfxPools[key] = pool;
@@ -136,8 +143,17 @@ class SoundManager {
     const index = this.sfxPoolIndexes[type];
     const audio = pool[index];
     
-    // Đặt lại thời gian và âm lượng rồi phát
-    audio.currentTime = 0;
+    // Đảm bảo dừng hẳn tiếng cũ nếu nó chưa kịp chạy xong
+    if (!audio.paused) {
+      audio.pause();
+    }
+    
+    // Nếu audio khác 0 (trường hợp bị pause giữa chừng), thì mới tua lại 0. 
+    // Tránh tua lúc đang ở 0 gây đọng buffer (lag)
+    if (audio.currentTime > 0) {
+      audio.currentTime = 0;
+    }
+    
     audio.volume = 0.6;
     audio.play().catch(err => console.warn(`SFX ${type} play failed:`, err));
 
