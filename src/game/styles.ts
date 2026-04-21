@@ -185,7 +185,7 @@ export const DpadContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 16px;
   
   ${props => props.$mode === 'overlay' ? `
     position: absolute;
@@ -206,13 +206,13 @@ export const DpadContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
 
 export const DpadRow = styled.div`
   display: flex;
-  gap: 8px;
+  gap: 16px;
   justify-content: center;
 `;
 
 export const DpadButton = styled.button`
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background-color: rgba(243, 244, 246, 0.85); /* nhạt, light gray */
@@ -231,8 +231,8 @@ export const DpadButton = styled.button`
   }
   
   svg {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
 `;
 
