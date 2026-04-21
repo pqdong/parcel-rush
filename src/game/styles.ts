@@ -147,26 +147,92 @@ export const GameHeader = styled.div`
   align-items: center;
   width: 90%;
   max-width: 400px;
-  margin: 10px auto;
-  padding: 10px 20px;
+  margin: 5px auto;
+  padding: 6px 16px;
   background-color: white;
   color: ${PRIMARY_COLOR};
   font-weight: 800;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   border-radius: 100px;
-  box-shadow: 0 8px 24px rgba(10, 104, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(10, 104, 255, 0.1);
   border: 2px solid rgba(10, 104, 255, 0.1);
 `;
 
 export const BoardContainer = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   flex: 1;
   min-height: 0;
-  padding: 10px;
+  padding: 0 10px 5px 10px;
   touch-action: none;
+`;
+
+export const GameAreaWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  position: relative;
+`;
+
+export const DpadContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
+  display: ${props => props.$mode === 'hidden' || props.$isHidden ? 'none' : 'flex'};
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  
+  ${props => props.$mode === 'overlay' ? `
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.6;
+    z-index: 50;
+    pointer-events: auto;
+  ` : `
+    padding: 0px 5px 5px 5px;
+    background: transparent;
+    flex-shrink: 0;
+    margin-bottom: 0px;
+    margin-top: 5px;
+  `}
+`;
+
+export const DpadRow = styled.div`
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+`;
+
+export const DpadButton = styled.button`
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: rgba(243, 244, 246, 0.85); /* nhạt, light gray */
+  color: #6b7280; /* Thu hút ít sự chú ý hơn */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  &:active {
+    transform: scale(0.92);
+    background-color: #e5e7eb;
+  }
+  
+  svg {
+    width: 28px;
+    height: 28px;
+  }
 `;
 
 export interface GridProps {
@@ -176,7 +242,8 @@ export interface GridProps {
 
 export const Grid = styled.div<GridProps>`
   aspect-ratio: ${props => props.$widthSize} / ${props => props.$heightSize};
-  height: 100%;
+  min-height: 0;
+  flex: 1;
   max-width: 100%;
   max-height: 100%;
   background-color: #e8f0fe;

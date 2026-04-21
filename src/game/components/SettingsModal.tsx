@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAppStore, DpadMode } from '../../store/useAppStore';
 import { Difficulty } from '../types';
 import { ModalOverlay, ModalContent, ModalHeader, SettingRow, Select, Toggle } from '../styles';
 
@@ -9,10 +9,10 @@ interface SettingsModalProps {
 }
 
 /**
- * Component hiển thị cài đặt game (Độ khó, Âm thanh)
+ * Component hiển thị cài đặt game (Độ khó, Âm thanh, Điều khiển)
  */
 export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
-  const { difficulty, setDifficulty, bgmEnabled, setBgmEnabled, sfxEnabled, setSfxEnabled } = useAppStore();
+  const { difficulty, setDifficulty, bgmEnabled, setBgmEnabled, sfxEnabled, setSfxEnabled, dpadMode, setDpadMode } = useAppStore();
   
   return (
     <ModalOverlay onClick={onClose}>
@@ -28,6 +28,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
             <option value="EASY">Dễ</option>
             <option value="MEDIUM">Vừa</option>
             <option value="HARD">Khó</option>
+          </Select>
+        </SettingRow>
+
+        <SettingRow>
+          <span>Kiểu điều khiển</span>
+          <Select value={dpadMode} onChange={e => setDpadMode(e.target.value as DpadMode)}>
+            <option value="overlay">Nổi trên khung chơi</option>
+            <option value="separate">Tách biệt ở dưới</option>
           </Select>
         </SettingRow>
         

@@ -16,7 +16,10 @@ import { getBaseSpeed, generateRandomPoint, generateObstacles } from './utils';
  * - Quản lý vòng lặp game (Game Loop) và điều khiển (Bàn phím, Vuốt).
  */
 export const useSnakeGame = () => {
-  const { difficulty, sfxEnabled, bgmEnabled, addHighScore } = useAppStore();
+  const difficulty = useAppStore(state => state.difficulty);
+  const sfxEnabled = useAppStore(state => state.sfxEnabled);
+  const bgmEnabled = useAppStore(state => state.bgmEnabled);
+  const addHighScore = useAppStore(state => state.addHighScore);
   
   // --- Game State ---
   const [snake, setSnake] = useState<Point[]>(INITIAL_SNAKE);
@@ -328,14 +331,21 @@ export const useSnakeGame = () => {
   }, [status]);
 
   // --- Controls ---
+  const handleDirectionInput = useCallback((newDir: Direction) => {
+      if (status !== 'PLAYING' && status !== 'COUNTDOWN' && status !== 'WAITING_REVIVE_MOVE') return;
+      changeDirection(newDir);
+      if (status === 'WAITING_REVIVE_MOVE') {
+        setStatus('PLAYING');
+        lastTimeRef.current = performance.now();
+      }
+  }, [status, changeDirection]);
+
   // Điều khiển bằng bàn phím (WASD / Mũi tên)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault(); // Chặn scroll trang khi dùng phím mũi tên
       }
-      
-      if (status !== 'PLAYING' && status !== 'COUNTDOWN' && status !== 'WAITING_REVIVE_MOVE') return;
       
       let newDir: Direction | null = null;
       switch (e.key) {
@@ -346,16 +356,12 @@ export const useSnakeGame = () => {
       }
       
       if (newDir) {
-        changeDirection(newDir);
-        if (status === 'WAITING_REVIVE_MOVE') {
-          setStatus('PLAYING');
-          lastTimeRef.current = performance.now();
-        }
+        handleDirectionInput(newDir);
       }
     };
     window.addEventListener('keydown', handleKeyDown, { passive: false });
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [status, changeDirection]);
+  }, [handleDirectionInput]);
 
   // Điều khiển bằng thao tác vuốt (Swipe) trên màn hình cảm ứng
   const touchStartRef = useRef<{x: number, y: number} | null>(null);
@@ -388,14 +394,10 @@ export const useSnakeGame = () => {
     }
     
     if (newDir) {
-      changeDirection(newDir);
-      if (status === 'WAITING_REVIVE_MOVE') {
-        setStatus('PLAYING');
-        lastTimeRef.current = performance.now();
-      }
+      handleDirectionInput(newDir);
     }
     touchStartRef.current = null;
-  }, [status, changeDirection]);
+  }, [handleDirectionInput]);
 
   return {
     snake,
@@ -412,6 +414,7 @@ export const useSnakeGame = () => {
     canRevive,
     handleTouchStart,
     handleTouchEnd,
+    handleDirectionInput,
     gridWidth: GRID_WIDTH,
     gridHeight: GRID_HEIGHT,
     gameId

@@ -14,7 +14,8 @@ import { HistoryScreen } from './components/HistoryScreen';
  * Quản lý việc chuyển đổi giữa các màn hình (Intro, Game, History)
  */
 export const SnakeGameApp: React.FC = () => {
-  const { currentScreen, setCurrentScreen } = useAppStore();
+  const currentScreen = useAppStore(state => state.currentScreen);
+  const setCurrentScreen = useAppStore(state => state.setCurrentScreen);
 
   useEffect(() => {
     // Nếu chuyển sang màn hình không phải là GAME, tự động dừng mọi âm thanh

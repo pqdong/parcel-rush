@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { motion } from 'motion/react';
-import { Package, Play, RotateCcw, Video } from 'lucide-react';
+import { Package, Play, RotateCcw, Video, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { useSnakeGame } from '../useSnakeGame';
 import { Direction } from '../types';
-import { Button, GameHeader, BoardContainer, Grid, Cell, GameOverOverlay, CellProps } from '../styles';
+import { Button, GameHeader, BoardContainer, GameAreaWrapper, DpadContainer, DpadRow, DpadButton, Grid, Cell, GameOverOverlay, CellProps } from '../styles';
 import { ReviveAdModal } from '../../components/Revive/ReviveAdModal';
 import { ReadyCountdownOverlay } from '../../components/Revive/ReadyCountdownOverlay';
 
@@ -32,9 +32,10 @@ export const GameScreen: React.FC = () => {
   const { 
     snake, direction, food, rocks, nowItem, status, score, currentSpeed, 
     startGame, startReviveCountdown, finishReviveCountdown, canRevive,
-    handleTouchStart, handleTouchEnd, gridWidth, gridHeight, gameId 
+    handleTouchStart, handleTouchEnd, handleDirectionInput, gridWidth, gridHeight, gameId 
   } = useSnakeGame();
-  const { setCurrentScreen } = useAppStore();
+  const setCurrentScreen = useAppStore(state => state.setCurrentScreen);
+  const dpadMode = useAppStore(state => state.dpadMode);
   const [isAdModalOpen, setIsAdModalOpen] = React.useState(false);
   const [isTouchDevice, setIsTouchDevice] = React.useState(true);
 
@@ -121,7 +122,7 @@ export const GameScreen: React.FC = () => {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <GameAreaWrapper>
       {/* Header: Hiển thị điểm số và trạng thái */}
       <GameHeader>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -212,6 +213,17 @@ export const GameScreen: React.FC = () => {
             </GameOverOverlay>
           )}
         </Grid>
+
+        <DpadContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
+          <DpadRow>
+            <DpadButton onClick={() => handleDirectionInput('UP')}><ChevronUp /></DpadButton>
+          </DpadRow>
+          <DpadRow>
+            <DpadButton onClick={() => handleDirectionInput('LEFT')}><ChevronLeft /></DpadButton>
+            <DpadButton onClick={() => handleDirectionInput('DOWN')}><ChevronDown /></DpadButton>
+            <DpadButton onClick={() => handleDirectionInput('RIGHT')}><ChevronRight /></DpadButton>
+          </DpadRow>
+        </DpadContainer>
       </BoardContainer>
       
       <ReviveAdModal 
@@ -223,6 +235,6 @@ export const GameScreen: React.FC = () => {
         isOpen={status === 'COUNTDOWN'} 
         onFinish={finishReviveCountdown} 
       />
-    </div>
+    </GameAreaWrapper>
   );
 };

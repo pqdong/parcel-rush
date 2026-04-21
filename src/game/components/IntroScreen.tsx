@@ -28,7 +28,10 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
   const [showTutorial, setShowTutorial] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const { tikiNowMode, setTikiNowMode } = useAppStore();
+  
+  const tikiNowMode = useAppStore(state => state.tikiNowMode);
+  const setTikiNowMode = useAppStore(state => state.setTikiNowMode);
+  const dpadMode = useAppStore(state => state.dpadMode);
 
   const handleStart = () => {
     soundManager.unlockAudio();
@@ -71,16 +74,14 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
       <InstructionContainer>
         <MobileInstruction>
           <InstructionIconWrapper>
-            <Smartphone size={40} strokeWidth={1.5} />
-            <MotionPointer 
-              $top={25} $left={25}
-              animate={{ x: [-10, 10, -10], y: [-10, 10, -10] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Pointer size={24} fill="currentColor" />
-            </MotionPointer>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+               <div style={{ display: 'flex', justifyContent: 'center' }}><ArrowUp size={20} /></div>
+               <div style={{ display: 'flex', gap: '4px' }}>
+                  <ArrowLeft size={20} /><ArrowDown size={20} /><ArrowRight size={20} />
+               </div>
+            </div>
           </InstructionIconWrapper>
-          <span>Vuốt màn hình để điều hướng</span>
+          <span>Dùng bộ nút ảo để điều hướng</span>
         </MobileInstruction>
         
         <DesktopInstruction>

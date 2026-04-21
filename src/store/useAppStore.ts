@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Difficulty } from '../game/types';
 
+export type DpadMode = 'overlay' | 'separate';
+
 /**
  * Interface định nghĩa cấu trúc state toàn cục của ứng dụng
  */
@@ -20,6 +22,9 @@ interface AppState {
   
   tikiNowMode: boolean;
   setTikiNowMode: (enabled: boolean) => void;
+
+  dpadMode: DpadMode;
+  setDpadMode: (mode: DpadMode) => void;
   
   highScores: { score: number; date: string; gameId?: number }[];
   addHighScore: (score: number, gameId?: number) => void;
@@ -46,6 +51,9 @@ export const useAppStore = create<AppState>()(
       
       tikiNowMode: false,
       setTikiNowMode: (enabled) => set({ tikiNowMode: enabled }),
+
+      dpadMode: 'separate',
+      setDpadMode: (mode) => set({ dpadMode: mode }),
       
       highScores: [],
       addHighScore: (score, gameId) => set((state) => {
