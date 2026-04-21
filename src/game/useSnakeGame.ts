@@ -343,7 +343,12 @@ export const useSnakeGame = () => {
   // Điều khiển bằng bàn phím (WASD / Mũi tên)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      // Bỏ qua các sự kiện bàn phím nếu đang gõ chữ ở đâu đó
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) {
+        return;
+      }
+      
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
         e.preventDefault(); // Chặn scroll trang khi dùng phím mũi tên
       }
       
@@ -363,42 +368,6 @@ export const useSnakeGame = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleDirectionInput]);
 
-  // Điều khiển bằng thao tác vuốt (Swipe) trên màn hình cảm ứng
-  const touchStartRef = useRef<{x: number, y: number} | null>(null);
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartRef.current = {
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    };
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!touchStartRef.current || (status !== 'PLAYING' && status !== 'COUNTDOWN' && status !== 'WAITING_REVIVE_MOVE')) return;
-    
-    const touchEndX = e.changedTouches[0].clientX;
-    const touchEndY = e.changedTouches[0].clientY;
-    
-    const dx = touchEndX - touchStartRef.current.x;
-    const dy = touchEndY - touchStartRef.current.y;
-    
-    let newDir: Direction | null = null;
-    // Xác định hướng vuốt dựa trên trục có độ lệch lớn hơn
-    if (Math.abs(dx) > Math.abs(dy)) {
-      if (Math.abs(dx) > 30) {
-        newDir = dx > 0 ? 'RIGHT' : 'LEFT';
-      }
-    } else {
-      if (Math.abs(dy) > 30) {
-        newDir = dy > 0 ? 'DOWN' : 'UP';
-      }
-    }
-    
-    if (newDir) {
-      handleDirectionInput(newDir);
-    }
-    touchStartRef.current = null;
-  }, [handleDirectionInput]);
-
   return {
     snake,
     direction,
@@ -412,8 +381,6 @@ export const useSnakeGame = () => {
     startReviveCountdown,
     finishReviveCountdown,
     canRevive,
-    handleTouchStart,
-    handleTouchEnd,
     handleDirectionInput,
     gridWidth: GRID_WIDTH,
     gridHeight: GRID_HEIGHT,

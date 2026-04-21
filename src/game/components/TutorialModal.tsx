@@ -20,7 +20,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ onClose }) => (
 
       <SectionContainer>
         <SectionTitle>🎮 Cách di chuyển</SectionTitle>
-        <SectionText className="no-margin">📱 <b>Điện thoại:</b> Vuốt ngón tay (lên, xuống, trái, phải) trên màn hình khu vực chơi.</SectionText>
+        <SectionText className="no-margin">📱 <b>Điện thoại:</b> Sử dụng bộ nút điều hướng ảo (D-pad) trên màn hình để di chuyển.</SectionText>
         <SectionText>💻 <b>Máy tính:</b> Dùng các phím mũi tên (⬆️ ⬇️ ⬅️ ➡️) hoặc phím W, A, S, D.</SectionText>
       </SectionContainer>
 

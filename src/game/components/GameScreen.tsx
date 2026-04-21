@@ -32,7 +32,7 @@ export const GameScreen: React.FC = () => {
   const { 
     snake, direction, food, rocks, nowItem, status, score, currentSpeed, 
     startGame, startReviveCountdown, finishReviveCountdown, canRevive,
-    handleTouchStart, handleTouchEnd, handleDirectionInput, gridWidth, gridHeight, gameId 
+    handleDirectionInput, gridWidth, gridHeight, gameId 
   } = useSnakeGame();
   const setCurrentScreen = useAppStore(state => state.setCurrentScreen);
   const dpadMode = useAppStore(state => state.dpadMode);
@@ -152,13 +152,13 @@ export const GameScreen: React.FC = () => {
             transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
             style={{ fontSize: '0.95rem', color: '#ff4d4f', fontWeight: 800, textTransform: 'uppercase' }}
           >
-            {isTouchDevice ? 'Vuốt để tiếp tục!' : 'Di chuyển để tiếp tục!'}
+            {isTouchDevice ? 'Nhấn nút để tiếp tục!' : 'Di chuyển để tiếp tục!'}
           </motion.span>
         )}
       </GameHeader>
       
-      {/* Container bàn chơi: Hỗ trợ vuốt trên mobile */}
-      <BoardContainer onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {/* Container bàn chơi */}
+      <BoardContainer>
         <Grid $widthSize={gridWidth} $heightSize={gridHeight} key={gameId}>
           {cells}
           
