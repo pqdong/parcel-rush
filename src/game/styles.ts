@@ -52,6 +52,7 @@ export const ContentArea = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  padding-top: max(24px, env(safe-area-inset-top)); /* Đẩy nội dung xuống 24px để tránh bị che bởi header */
 `;
 
 export const ScreenContainer = styled.div`
@@ -184,7 +185,7 @@ export const DpadContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
   
   ${props => props.$mode === 'overlay' ? `
     position: absolute;
@@ -205,14 +206,14 @@ export const DpadContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
 
 export const DpadRow = styled.div`
   display: flex;
-  gap: 4px;
+  gap: 8px;
   justify-content: center;
 `;
 
 export const DpadButton = styled.button`
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background-color: rgba(243, 244, 246, 0.85); /* nhạt, light gray */
   color: #6b7280; /* Thu hút ít sự chú ý hơn */
@@ -230,8 +231,8 @@ export const DpadButton = styled.button`
   }
   
   svg {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
   }
 `;
 
