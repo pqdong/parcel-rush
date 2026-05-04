@@ -15,21 +15,21 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ onClose }) => (
       
       <SectionContainer>
         <SectionTitle>🎯 Mục tiêu</SectionTitle>
-        <SectionText>Hóa thân thành anh Shipper chăm chỉ, thu thập càng nhiều thùng hàng càng tốt để đạt điểm cao!</SectionText>
+        <SectionText>Lấy thật nhiều đơn hàng để đạt điểm cao nhất!</SectionText>
       </SectionContainer>
 
       <SectionContainer>
-        <SectionTitle>🎮 Cách di chuyển</SectionTitle>
-        <SectionText className="no-margin">📱 <b>Điện thoại:</b> Sử dụng bộ nút điều hướng ảo (D-pad) trên màn hình để di chuyển.</SectionText>
-        <SectionText>💻 <b>Máy tính:</b> Dùng các phím mũi tên (⬆️ ⬇️ ⬅️ ➡️) hoặc phím W, A, S, D.</SectionText>
+        <SectionTitle>🎮 Di chuyển</SectionTitle>
+        <SectionText className="no-margin">📱 <b>Mobile:</b> Dùng nút điều hướng trên màn hình.</SectionText>
+        <SectionText>💻 <b>PC:</b> Phím W, A, S, D hoặc các phím mũi tên.</SectionText>
       </SectionContainer>
 
       <SectionContainer>
         <SectionTitle>📜 Luật chơi</SectionTitle>
-        <SectionText>📦 <b>Lấy hàng:</b> Mỗi vật phẩm lấy được mặc định cộng <b>10 điểm</b>. Thùng hàng sẽ nối đuôi theo sau xe, làm đoàn xe dài ra và tốc độ chạy sẽ tăng dần lên.</SectionText>
-        <SectionText>⚡ <b>Vật phẩm NOW:</b> Nếu bật chế độ "Tiki NOW", vật phẩm NOW sẽ xuất hiện ngẫu nhiên. Khi ăn được vật phẩm NOW, điểm số của <b>mỗi vật phẩm ăn được tiếp theo</b> sẽ tăng thêm <b>10 điểm</b> (cộng dồn). Đồng thời xe sẽ được tăng tốc độ đáng kể! Nếu bỏ qua, vật phẩm sẽ tự biến mất sau vài lượt.</SectionText>
-        <SectionText>🪨 <b>Tránh chướng ngại vật:</b> Cẩn thận đá tảng và cây cối! Tông phải sẽ bị trừ <b>10 điểm</b> và đánh rơi mất 1 thùng hàng ở phía sau. Nếu thùng hàng bị rơi là vật phẩm NOW, bạn sẽ bị mất đi mức điểm thưởng cộng dồn tương ứng.</SectionText>
-        <SectionText>💥 <b>Thua cuộc (Game Over):</b> Trò chơi kết thúc nếu Shipper tông xe vào tường (cạnh màn hình) hoặc tông vào chính đoàn xe của mình.</SectionText>
+        <SectionText>📦 <b>Ăn hàng:</b> +10 điểm, đuôi xe dài ra và chạy nhanh dần.</SectionText>
+        <SectionText>⚡ <b>Gói NOW (Tùy chọn):</b> +10 điểm vĩnh viễn cho <i>mọi đơn hàng</i> lấy sau đó. Xe sẽ tăng tốc. Sẽ biến mất nếu không ăn sớm.</SectionText>
+        <SectionText>🪨 <b>Tránh chướng ngại vật:</b> Đụng phải sẽ rớt 1 thùng hàng cuối cùng & bị -10 điểm (mất cả hiệu ứng NOW nếu rơi trúng thùng NOW).</SectionText>
+        <SectionText>💥 <b>Thua cuộc:</b> Tông vào tường hoặc tông vào đuôi chở hàng của chính mình.</SectionText>
       </SectionContainer>
 
       <Button onClick={onClose} style={{ marginTop: 10 }}>Đã hiểu, chiến thôi!</Button>

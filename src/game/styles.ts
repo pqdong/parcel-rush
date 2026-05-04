@@ -204,6 +204,27 @@ export const DpadContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
   `}
 `;
 
+export const JoystickContainer = styled.div<{ $mode: string, $isHidden?: boolean }>`
+  display: ${props => props.$isHidden ? 'none' : 'flex'};
+  justify-content: center;
+  align-items: center;
+  touch-action: none;
+
+  ${props => props.$mode === 'overlay' ? `
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.8;
+    z-index: 50;
+    pointer-events: auto;
+  ` : `
+    padding: 10px;
+    margin-top: 5px;
+    flex-shrink: 0;
+  `}
+`;
+
 export const DpadRow = styled.div`
   display: flex;
   gap: 16px;

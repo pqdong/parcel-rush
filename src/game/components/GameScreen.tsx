@@ -1,12 +1,13 @@
 import React, { memo } from 'react';
 import { motion } from 'motion/react';
-import { Package, Play, RotateCcw, Video, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Package, Play, RotateCcw, Video, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { useSnakeGame } from '../useSnakeGame';
 import { Direction } from '../types';
-import { Button, GameHeader, BoardContainer, GameAreaWrapper, DpadContainer, DpadRow, DpadButton, Grid, Cell, GameOverOverlay, CellProps } from '../styles';
+import { Button, GameHeader, BoardContainer, GameAreaWrapper, DpadContainer, DpadRow, DpadButton, Grid, Cell, GameOverOverlay, CellProps, JoystickContainer } from '../styles';
 import { ReviveAdModal } from '../../components/Revive/ReviveAdModal';
 import { ReadyCountdownOverlay } from '../../components/Revive/ReadyCountdownOverlay';
+import { Joystick } from 'react-joystick-component';
 
 const MotionButton = motion.create(Button);
 
@@ -36,6 +37,7 @@ export const GameScreen: React.FC = () => {
   } = useSnakeGame();
   const setCurrentScreen = useAppStore(state => state.setCurrentScreen);
   const dpadMode = useAppStore(state => state.dpadMode);
+  const controlType = useAppStore(state => state.controlType);
   const [isAdModalOpen, setIsAdModalOpen] = React.useState(false);
   const [isTouchDevice, setIsTouchDevice] = React.useState(true);
 
@@ -71,6 +73,36 @@ export const GameScreen: React.FC = () => {
 
   const handleReviveCancel = () => {
     setIsAdModalOpen(false);
+  };
+
+  const handleShare = async () => {
+    // Tìm điểm cao nhất từ mảng highScores, nếu chưa có thì lấy điểm hiện tại làm điểm cao nhất (vì có thể score chưa được lưu vào store kịp)
+    const highScore = useAppStore.getState().highScores[0]?.score || 0;
+    const bestScore = Math.max(score, highScore);
+
+    const shareData = {
+      title: 'Shipper Lấy Hàng',
+      text: `Tôi vừa đạt được ${score} điểm trong game Shipper Lấy Hàng (Kỷ lục của tôi: ${bestScore} điểm)! Bạn có rảnh không, vào chơi thử nhé!`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User maybe cancelled or failed
+      }
+    } else {
+      // Fallback
+      alert(`Tôi vừa đạt được ${score} điểm trong game Shipper Lấy Hàng (Kỷ lục của tôi: ${bestScore} điểm)! Cùng chơi nào: ${window.location.href}`);
+    }
+  };
+
+  const handleJoystickMove = (event: any) => {
+    if (event.direction === 'FORWARD') handleDirectionInput('UP');
+    else if (event.direction === 'BACKWARD') handleDirectionInput('DOWN');
+    else if (event.direction === 'LEFT') handleDirectionInput('LEFT');
+    else if (event.direction === 'RIGHT') handleDirectionInput('RIGHT');
   };
 
   // --- Sinh ra các thực thể (Entities) trên bàn cờ ---
@@ -189,6 +221,17 @@ export const GameScreen: React.FC = () => {
                 <RotateCcw size={20} />
                 Chơi lại {canRevive ? 'từ đầu' : ''}
               </MotionButton>
+
+              <MotionButton 
+                onClick={handleShare} 
+                style={{ width: '80%', background: 'linear-gradient(135deg, #ff007a, #ff7a00)', border: 'none', marginBottom: '12px' }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Share2 size={20} />
+                Chia sẻ thành tích
+              </MotionButton>
+
               <Button variant="secondary" onClick={() => setCurrentScreen('INTRO')} style={{ width: '80%' }}>Về trang chủ</Button>
             </GameOverOverlay>
           )}
@@ -214,16 +257,28 @@ export const GameScreen: React.FC = () => {
           )}
         </Grid>
 
-        <DpadContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
-          <DpadRow>
-            <DpadButton onClick={() => handleDirectionInput('UP')}><ChevronUp /></DpadButton>
-          </DpadRow>
-          <DpadRow>
-            <DpadButton onClick={() => handleDirectionInput('LEFT')}><ChevronLeft /></DpadButton>
-            <DpadButton onClick={() => handleDirectionInput('DOWN')}><ChevronDown /></DpadButton>
-            <DpadButton onClick={() => handleDirectionInput('RIGHT')}><ChevronRight /></DpadButton>
-          </DpadRow>
-        </DpadContainer>
+        {controlType === 'joystick' ? (
+          <JoystickContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
+            <Joystick 
+              size={90} 
+              sticky={false} 
+              baseColor="rgba(243, 244, 246, 0.85)" 
+              stickColor="#9ca3af" 
+              move={handleJoystickMove} 
+            />
+          </JoystickContainer>
+        ) : (
+          <DpadContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
+            <DpadRow>
+              <DpadButton onClick={() => handleDirectionInput('UP')}><ChevronUp /></DpadButton>
+            </DpadRow>
+            <DpadRow>
+              <DpadButton onClick={() => handleDirectionInput('LEFT')}><ChevronLeft /></DpadButton>
+              <DpadButton onClick={() => handleDirectionInput('DOWN')}><ChevronDown /></DpadButton>
+              <DpadButton onClick={() => handleDirectionInput('RIGHT')}><ChevronRight /></DpadButton>
+            </DpadRow>
+          </DpadContainer>
+        )}
       </BoardContainer>
       
       <ReviveAdModal 

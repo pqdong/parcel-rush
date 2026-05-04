@@ -12,7 +12,7 @@ interface SettingsModalProps {
  * Component hiển thị cài đặt game (Độ khó, Âm thanh, Điều khiển)
  */
 export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
-  const { difficulty, setDifficulty, bgmEnabled, setBgmEnabled, sfxEnabled, setSfxEnabled, dpadMode, setDpadMode } = useAppStore();
+  const { difficulty, setDifficulty, bgmEnabled, setBgmEnabled, sfxEnabled, setSfxEnabled, dpadMode, setDpadMode, controlType, setControlType } = useAppStore();
   
   return (
     <ModalOverlay onClick={onClose}>
@@ -32,12 +32,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
         </SettingRow>
 
         <SettingRow>
-          <span>Kiểu điều khiển</span>
-          <Select value={dpadMode} onChange={e => setDpadMode(e.target.value as DpadMode)}>
-            <option value="overlay">Nổi trên khung chơi</option>
-            <option value="separate">Tách biệt ở dưới</option>
+          <span>Kiểu nút ảo</span>
+          <Select value={controlType} onChange={e => setControlType(e.target.value as 'joystick' | 'dpad')}>
+            <option value="joystick">Joystick</option>
+            <option value="dpad">D-pad (4 Nút)</option>
           </Select>
         </SettingRow>
+
+        {controlType === 'dpad' || controlType === 'joystick' ? (
+          <SettingRow>
+            <span>Vị trí bộ điều khiển</span>
+            <Select value={dpadMode} onChange={e => setDpadMode(e.target.value as DpadMode)}>
+              <option value="overlay">Nổi trên khung chơi</option>
+              <option value="separate">Tách biệt ở dưới</option>
+            </Select>
+          </SettingRow>
+        ) : null}
         
         <SettingRow>
           <span>Nhạc nền</span>

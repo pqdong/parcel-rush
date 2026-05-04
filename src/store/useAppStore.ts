@@ -26,6 +26,9 @@ interface AppState {
   dpadMode: DpadMode;
   setDpadMode: (mode: DpadMode) => void;
   
+  controlType: 'joystick' | 'dpad';
+  setControlType: (type: 'joystick' | 'dpad') => void;
+  
   highScores: { score: number; date: string; gameId?: number }[];
   addHighScore: (score: number, gameId?: number) => void;
 }
@@ -54,6 +57,9 @@ export const useAppStore = create<AppState>()(
 
       dpadMode: 'separate',
       setDpadMode: (mode) => set({ dpadMode: mode }),
+      
+      controlType: 'joystick',
+      setControlType: (type) => set({ controlType: type }),
       
       highScores: [],
       addHighScore: (score, gameId) => set((state) => {
