@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useAppStore, DpadMode } from '../../store/useAppStore';
 import { Difficulty } from '../types';
@@ -13,7 +13,12 @@ interface SettingsModalProps {
  */
 export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
   const { difficulty, setDifficulty, bgmEnabled, setBgmEnabled, sfxEnabled, setSfxEnabled, dpadMode, setDpadMode, controlType, setControlType } = useAppStore();
-  
+  const [isTouchDevice, setIsTouchDevice] = useState(true);
+
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>
@@ -31,23 +36,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ onClose }) => {
           </Select>
         </SettingRow>
 
-        <SettingRow>
-          <span>Kiểu nút ảo</span>
-          <Select value={controlType} onChange={e => setControlType(e.target.value as 'joystick' | 'dpad')}>
-            <option value="joystick">Joystick</option>
-            <option value="dpad">D-pad (4 Nút)</option>
-          </Select>
-        </SettingRow>
+        {isTouchDevice && (
+          <>
+            <SettingRow>
+              <span>Kiểu bộ điều khiển</span>
+              <Select value={controlType} onChange={e => setControlType(e.target.value as 'joystick' | 'dpad')}>
+                <option value="joystick">Joystick</option>
+                <option value="dpad">D-pad (4 Nút)</option>
+              </Select>
+            </SettingRow>
 
-        {controlType === 'dpad' || controlType === 'joystick' ? (
-          <SettingRow>
-            <span>Vị trí bộ điều khiển</span>
-            <Select value={dpadMode} onChange={e => setDpadMode(e.target.value as DpadMode)}>
-              <option value="overlay">Nổi trên khung chơi</option>
-              <option value="separate">Tách biệt ở dưới</option>
-            </Select>
-          </SettingRow>
-        ) : null}
+            {(controlType === 'dpad' || controlType === 'joystick') && (
+              <SettingRow>
+                <span>Vị trí bộ điều khiển</span>
+                <Select value={dpadMode} onChange={e => setDpadMode(e.target.value as DpadMode)}>
+                  <option value="overlay">Nổi trên khung chơi</option>
+                  <option value="separate">Tách biệt ở dưới</option>
+                </Select>
+              </SettingRow>
+            )}
+          </>
+        )}
         
         <SettingRow>
           <span>Nhạc nền</span>

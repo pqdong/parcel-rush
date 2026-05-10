@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { HelpCircle, Settings, Play, Smartphone, Pointer, Keyboard, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, LogOut } from 'lucide-react';
+import { HelpCircle, Settings, Play, Smartphone, Pointer, Keyboard, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, LogOut, Joystick } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { 
   ScreenContainer, Title, Button, InstructionContainer, MobileInstruction, DesktopInstruction,
@@ -74,14 +74,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
       <InstructionContainer>
         <MobileInstruction>
           <InstructionIconWrapper>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-               <div style={{ display: 'flex', justifyContent: 'center' }}><ArrowUp size={20} /></div>
-               <div style={{ display: 'flex', gap: '4px' }}>
-                  <ArrowLeft size={20} /><ArrowDown size={20} /><ArrowRight size={20} />
-               </div>
-            </div>
+            <Joystick size={40} strokeWidth={1.5} color="#0a68ff" />
           </InstructionIconWrapper>
-          <span>Dùng bộ nút ảo để điều hướng</span>
+          <span>Dùng Joystick hoặc D-pad ảo để điều hướng</span>
         </MobileInstruction>
         
         <DesktopInstruction>

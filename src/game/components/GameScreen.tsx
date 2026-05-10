@@ -257,27 +257,29 @@ export const GameScreen: React.FC = () => {
           )}
         </Grid>
 
-        {controlType === 'joystick' ? (
-          <JoystickContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
-            <Joystick 
-              size={90} 
-              sticky={false} 
-              baseColor="rgba(243, 244, 246, 0.85)" 
-              stickColor="#9ca3af" 
-              move={handleJoystickMove} 
-            />
-          </JoystickContainer>
-        ) : (
-          <DpadContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
-            <DpadRow>
-              <DpadButton onClick={() => handleDirectionInput('UP')}><ChevronUp /></DpadButton>
-            </DpadRow>
-            <DpadRow>
-              <DpadButton onClick={() => handleDirectionInput('LEFT')}><ChevronLeft /></DpadButton>
-              <DpadButton onClick={() => handleDirectionInput('DOWN')}><ChevronDown /></DpadButton>
-              <DpadButton onClick={() => handleDirectionInput('RIGHT')}><ChevronRight /></DpadButton>
-            </DpadRow>
-          </DpadContainer>
+        {isTouchDevice && (
+          controlType === 'joystick' ? (
+            <JoystickContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
+              <Joystick 
+                size={90} 
+                sticky={false} 
+                baseColor="rgba(243, 244, 246, 0.85)" 
+                stickColor="#9ca3af" 
+                move={handleJoystickMove} 
+              />
+            </JoystickContainer>
+          ) : (
+            <DpadContainer $mode={dpadMode} $isHidden={dpadMode === 'overlay' && (status === 'GAME_OVER' || status === 'IDLE')}>
+              <DpadRow>
+                <DpadButton onClick={() => handleDirectionInput('UP')}><ChevronUp /></DpadButton>
+              </DpadRow>
+              <DpadRow>
+                <DpadButton onClick={() => handleDirectionInput('LEFT')}><ChevronLeft /></DpadButton>
+                <DpadButton onClick={() => handleDirectionInput('DOWN')}><ChevronDown /></DpadButton>
+                <DpadButton onClick={() => handleDirectionInput('RIGHT')}><ChevronRight /></DpadButton>
+              </DpadRow>
+            </DpadContainer>
+          )
         )}
       </BoardContainer>
       

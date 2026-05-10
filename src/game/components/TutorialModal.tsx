@@ -20,8 +20,11 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ onClose }) => (
 
       <SectionContainer>
         <SectionTitle>🎮 Di chuyển</SectionTitle>
-        <SectionText className="no-margin">📱 <b>Mobile:</b> Dùng nút điều hướng trên màn hình.</SectionText>
+        <SectionText className="no-margin">📱 <b>Mobile:</b> Dùng bộ điều hướng (D-pad/Joystick) trên màn hình.</SectionText>
         <SectionText>💻 <b>PC:</b> Phím W, A, S, D hoặc các phím mũi tên.</SectionText>
+        <SectionText style={{ fontSize: '0.85em', color: '#6b7280', marginTop: '4px' }}>
+          * Có thể thay đổi kiểu nút ảo (D-pad 4 nút hoặc Joystick) và vị trí của chúng trong phần Cài đặt (⚙️).
+        </SectionText>
       </SectionContainer>
 
       <SectionContainer>

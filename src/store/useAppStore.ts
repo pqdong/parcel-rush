@@ -58,7 +58,7 @@ export const useAppStore = create<AppState>()(
       dpadMode: 'separate',
       setDpadMode: (mode) => set({ dpadMode: mode }),
       
-      controlType: 'joystick',
+      controlType: 'dpad',
       setControlType: (type) => set({ controlType: type }),
       
       highScores: [],
